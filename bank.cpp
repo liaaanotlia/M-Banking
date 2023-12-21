@@ -14,19 +14,19 @@ struct Nasabah {
 };
 
 // Prototipe Function
-void daftar_nasabah(vector<Nasabah>& nasabah_list);
-void menabung(vector<Nasabah>& nasabah_list, stack<string>& riwayat_transaksi);
-void penarikan(vector<Nasabah>& nasabah_list, stack<string>& riwayat_transaksi);
-void cetak_daftar_nasabah(vector<Nasabah>& nasabah_list);
-void cari_nasabah(vector<Nasabah>& nasabah_list);
-void bubble_sort(vector<Nasabah>& nasabah_list);
-void proses_antrian(queue<string>& antrian_transaksi);
+void daftar_nasabah(vector<Nasabah>* nasabah_list);
+void menabung(vector<Nasabah>* nasabah_list, stack<string>* riwayat_transaksi);
+void penarikan(vector<Nasabah>* nasabah_list, stack<string>* riwayat_transaksi);
+void cetak_daftar_nasabah(vector<Nasabah>* nasabah_list);
+void cari_nasabah(vector<Nasabah>* nasabah_list);
+void bubble_sort(vector<Nasabah>* nasabah_list);
+void proses_antrian(queue<string>* antrian_transaksi);
 
 // Program Utama
 int main() {
-    vector<Nasabah> nasabah_list;
-    stack<string> riwayat_transaksi;
-    queue<string> antrian_transaksi;
+    vector<Nasabah>* nasabah_list = new vector<Nasabah>();
+    stack<string>* riwayat_transaksi = new stack<string>();
+    queue<string>* antrian_transaksi = new queue<string>();
     int pilihan;
 
     do {
@@ -72,11 +72,16 @@ int main() {
         }
     } while (pilihan != 7);
 
+    // Bersihkan memori yang dialokasikan
+    delete nasabah_list;
+    delete riwayat_transaksi;
+    delete antrian_transaksi;
+
     return 0;
 }
 
 // Implementasi Function
-void daftar_nasabah(vector<Nasabah>& nasabah_list) {
+void daftar_nasabah(vector<Nasabah>* nasabah_list) {
     Nasabah nasabah;
     cout << "Masukkan Nama Nasabah : ";
     cin.ignore();
@@ -86,46 +91,46 @@ void daftar_nasabah(vector<Nasabah>& nasabah_list) {
     cout << "Masukkan Saldo Nasabah : ";
     cin >> nasabah.saldo;
 
-    nasabah_list.push_back(nasabah);
+    nasabah_list->push_back(nasabah);
     cout << "Pendaftaran Nasabah Berhasil" << endl;
 }
 
-void menabung(vector<Nasabah>& nasabah_list, stack<string>& riwayat_transaksi) {
+void menabung(vector<Nasabah>* nasabah_list, stack<string>* riwayat_transaksi) {
     int nomor_rekening;
     int jumlah_tabungan;
 
     cout << "Masukkan Nomor Rekening Nasabah : ";
     cin >> nomor_rekening;
 
-    auto it = find_if(nasabah_list.begin(), nasabah_list.end(), [nomor_rekening](const Nasabah& nasabah) {
+    auto it = find_if(nasabah_list->begin(), nasabah_list->end(), [nomor_rekening](const Nasabah& nasabah) {
         return nasabah.nomor_rekening == nomor_rekening;
     });
 
-    if (it != nasabah_list.end()) {
+    if (it != nasabah_list->end()) {
         cout << "Masukkan Jumlah Tabungan : ";
         cin >> jumlah_tabungan;
         it->saldo += jumlah_tabungan;
 
         // Tambahkan transaksi ke dalam riwayat
-        riwayat_transaksi.push("Menabung (Nomor Rekening: " + to_string(nomor_rekening) + ")");
+        riwayat_transaksi->push("Menabung (Nomor Rekening: " + to_string(nomor_rekening) + ")");
         cout << "Menabung Berhasil" << endl;
     } else {
         cout << "Nasabah Tidak Ditemukan" << endl;
     }
 }
 
-void penarikan(vector<Nasabah>& nasabah_list, stack<string>& riwayat_transaksi) {
+void penarikan(vector<Nasabah>* nasabah_list, stack<string>* riwayat_transaksi) {
     int nomor_rekening;
     int jumlah_penarikan;
 
     cout << "Masukkan Nomor Rekening Nasabah : ";
     cin >> nomor_rekening;
 
-    auto it = find_if(nasabah_list.begin(), nasabah_list.end(), [nomor_rekening](const Nasabah& nasabah) {
+    auto it = find_if(nasabah_list->begin(), nasabah_list->end(), [nomor_rekening](const Nasabah& nasabah) {
         return nasabah.nomor_rekening == nomor_rekening;
     });
 
-    if (it != nasabah_list.end()) {
+    if (it != nasabah_list->end()) {
         cout << "Masukkan Jumlah Penarikan : ";
         cin >> jumlah_penarikan;
 
@@ -133,7 +138,7 @@ void penarikan(vector<Nasabah>& nasabah_list, stack<string>& riwayat_transaksi) 
             it->saldo -= jumlah_penarikan;
 
             // Tambahkan transaksi ke dalam riwayat
-            riwayat_transaksi.push("Penarikan (Nomor Rekening: " + to_string(nomor_rekening) + ")");
+            riwayat_transaksi->push("Penarikan (Nomor Rekening: " + to_string(nomor_rekening) + ")");
             cout << "Penarikan Berhasil" << endl;
         } else {
             cout << "Saldo Tidak Cukup" << endl;
@@ -143,26 +148,26 @@ void penarikan(vector<Nasabah>& nasabah_list, stack<string>& riwayat_transaksi) 
     }
 }
 
-void cetak_daftar_nasabah(vector<Nasabah>& nasabah_list) {
+void cetak_daftar_nasabah(vector<Nasabah>* nasabah_list) {
     cout << "No. " << "| " << "Nama Nasabah " << "| " << "Nomor Rekening " << "| " << "Saldo " << endl;
     cout << "---------------------------------------------------------" << endl;
 
-    for (size_t i = 0; i < nasabah_list.size(); i++) {
-        cout << i + 1 << ". " << nasabah_list[i].nama << " | " << nasabah_list[i].nomor_rekening << " | " << nasabah_list[i].saldo << endl;
+    for (size_t i = 0; i < nasabah_list->size(); i++) {
+        cout << i + 1 << ". " << (*nasabah_list)[i].nama << " | " << (*nasabah_list)[i].nomor_rekening << " | " << (*nasabah_list)[i].saldo << endl;
     }
 }
 
-void cari_nasabah(vector<Nasabah>& nasabah_list) {
+void cari_nasabah(vector<Nasabah>* nasabah_list) {
     int nomor_rekening;
 
     cout << "Masukkan Nomor Rekening Nasabah yang ingin Anda Cari : ";
     cin >> nomor_rekening;
 
-    auto it = find_if(nasabah_list.begin(), nasabah_list.end(), [nomor_rekening](const Nasabah& nasabah) {
+    auto it = find_if(nasabah_list->begin(), nasabah_list->end(), [nomor_rekening](const Nasabah& nasabah) {
         return nasabah.nomor_rekening == nomor_rekening;
     });
 
-    if (it != nasabah_list.end()) {
+    if (it != nasabah_list->end()) {
         cout << "Nasabah Ditemukan" << endl;
         cout << "Nama Nasabah : " << it->nama << endl;
         cout << "Nomor Rekening : " << it->nomor_rekening << endl;
@@ -172,20 +177,20 @@ void cari_nasabah(vector<Nasabah>& nasabah_list) {
     }
 }
 
-void bubble_sort(vector<Nasabah>& nasabah_list) {
-    for (size_t i = 0; i < nasabah_list.size() - 1; i++) {
-        for (size_t j = 0; j < nasabah_list.size() - i - 1; j++) {
-            if (nasabah_list[j].nomor_rekening > nasabah_list[j + 1].nomor_rekening) {
-                swap(nasabah_list[j], nasabah_list[j + 1]);
+void bubble_sort(vector<Nasabah>* nasabah_list) {
+    for (size_t i = 0; i < nasabah_list->size() - 1; i++) {
+        for (size_t j = 0; j < nasabah_list->size() - i - 1; j++) {
+            if ((*nasabah_list)[j].nomor_rekening > (*nasabah_list)[j + 1].nomor_rekening) {
+                swap((*nasabah_list)[j], (*nasabah_list)[j + 1]);
             }
         }
     }
 }
 
-void proses_antrian(queue<string>& antrian_transaksi) {
-    while (!antrian_transaksi.empty()) {
-        cout << "Mengproses transaksi: " << antrian_transaksi.front() << endl;
-        antrian_transaksi.pop();
+void proses_antrian(queue<string>* antrian_transaksi) {
+    while (!antrian_transaksi->empty()) {
+        cout << "Mengproses transaksi: " << antrian_transaksi->front() << endl;
+        antrian_transaksi->pop();
     }
     cout << "Proses antrian transaksi selesai." << endl;
 }
